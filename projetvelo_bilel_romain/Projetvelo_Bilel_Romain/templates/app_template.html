@@ -1,0 +1,695 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VéloRoute — Planificateur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 0 1.5rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .topbar-brand span { color: #22d3ee; }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-info {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        .user-info strong { color: #e2e8f0; }
+        .btn-logout {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            background: transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-logout:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.08); }
+
+        /* ── Main layout ── */
+        .app-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            height: calc(100vh - 60px);
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 360px;
+            flex-shrink: 0;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar-section {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        .sidebar-section:last-child { border-bottom: none; }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #475569;
+            margin-bottom: 0.75rem;
+        }
+
+        /* City selector */
+        .city-select-wrap { position: relative; }
+        .city-select-wrap::after {
+            content: '▾';
+            position: absolute;
+            right: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #22d3ee;
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+        select#citySelect {
+            width: 100%;
+            padding: 0.7rem 2rem 0.7rem 0.875rem;
+            background: #0f172a;
+            border: 1.5px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select#citySelect:focus { border-color: #22d3ee; }
+        select#citySelect option { background: #1e293b; }
+
+        /* Instruction box */
+        .instruction-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .instruction-box .inst-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+        .instruction-box.step-active { border-color: #22d3ee; color: #e2e8f0; background: rgba(34,211,238,0.05); }
+
+        /* Route summary */
+        .route-card { display: none; }
+        .route-card.visible { display: block; }
+
+        .route-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #1e293b;
+        }
+        .route-step:last-child { border-bottom: none; }
+        .step-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .step-icon.walk { background: rgba(99,179,237,0.15); }
+        .step-icon.bike { background: rgba(34,211,238,0.15); }
+        .step-text { flex: 1; }
+        .step-name { font-size: 0.85rem; font-weight: 500; color: #e2e8f0; }
+        .step-sub  { font-size: 0.775rem; color: #64748b; margin-top: 1px; }
+        .step-time {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #22d3ee;
+            white-space: nowrap;
+        }
+
+        .total-time-bar {
+            background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(8,145,178,0.1));
+            border: 1px solid rgba(34,211,238,0.25);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.75rem;
+        }
+        .total-label { font-size: 0.8rem; color: #94a3b8; font-weight: 500; }
+        .total-value { font-size: 1.1rem; font-weight: 700; color: #22d3ee; }
+
+        .action-btns {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.75rem;
+        }
+        .btn {
+            flex: 1;
+            padding: 0.7rem 0.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #22d3ee, #0891b2);
+            color: #0f172a;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        .btn-secondary:hover { background: #475569; }
+
+        /* Last itinerary */
+        .last-itin {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        .last-itin strong { color: #94a3b8; }
+
+        /* ── Map ── */
+        .map-wrap { flex: 1; position: relative; }
+        #map { width: 100%; height: 100%; }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15,23,42,0.6);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .loading-overlay.active { display: flex; }
+        .spinner {
+            width: 42px; height: 42px;
+            border: 3px solid #334155;
+            border-top-color: #22d3ee;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading-text { color: #94a3b8; font-size: 0.9rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* hidden helper */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+        <div class="topbar-brand">🚲 Vélo<span>Route</span></div>
+        <div class="topbar-right">
+            <span class="user-info">Bonjour, <strong>{{ user.username }}</strong></span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Déconnexion</a>
+        </div>
+    </header>
+
+    <!-- ── MAIN ── -->
+    <div class="app-layout">
+
+        <!-- ── SIDEBAR ── -->
+        <aside class="sidebar">
+
+            <!-- City picker -->
+            <div class="sidebar-section">
+                <div class="section-label">Ville</div>
+                <div class="city-select-wrap">
+                    <select id="citySelect">
+                        <option value="">— Choisir une ville —</option>
+                        <option value="Dublin"    {% if user_city == 'Dublin'    %}selected{% endif %}>Dublin</option>
+                        <option value="Lyon"      {% if user_city == 'Lyon'      %}selected{% endif %}>Lyon</option>
+                        <option value="Luxembourg"{% if user_city == 'Luxembourg'%}selected{% endif %}>Luxembourg</option>
+                        <option value="Toulouse"  {% if user_city == 'Toulouse'  %}selected{% endif %}>Toulouse</option>
+                        <option value="Paris"     {% if user_city == 'Paris'     %}selected{% endif %}>Paris</option>
+                        <option value="Marseille" {% if user_city == 'Marseille' %}selected{% endif %}>Marseille</option>
+                        <option value="Brisbane"  {% if user_city == 'Brisbane'  %}selected{% endif %}>Brisbane</option>
+                        <option value="Bruxelles" {% if user_city == 'Bruxelles' %}selected{% endif %}>Bruxelles</option>
+                        <option value="Namur"     {% if user_city == 'Namur'     %}selected{% endif %}>Namur</option>
+                        <option value="Santander" {% if user_city == 'Santander' %}selected{% endif %}>Santander</option>
+                        <option value="Seville"   {% if user_city == 'Seville'   %}selected{% endif %}>Séville</option>
+                        <option value="Valence"   {% if user_city == 'Valence'   %}selected{% endif %}>Valence (ES)</option>
+                        <option value="Toyama"    {% if user_city == 'Toyama'    %}selected{% endif %}>Toyama</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="sidebar-section">
+                <div class="section-label">Étapes</div>
+                <div class="instruction-box" id="instructionBox">
+                    <span class="inst-icon">ℹ️</span>
+                    <span id="instruction-text">Sélectionnez une ville pour commencer.</span>
+                </div>
+            </div>
+
+            <!-- Route summary (hidden until calculated) -->
+            <div class="sidebar-section route-card" id="routeCard">
+                <div class="section-label">Résumé du trajet</div>
+
+                <div class="route-step">
+                    <div class="step-icon walk">🚶</div>
+                    <div class="step-text">
+                        <div class="step-name">Marche — départ → station</div>
+                        <div class="step-sub" id="step1-sub">—</div>
+                    </div>
+                    <div class="step-time" id="step1-time">—</div>
+                </div>
+
+                <div class="route-step">
+                    <div class="step-icon bike">🚲</div>
+                    <div class="step-text">
+                        <div class="step-name">Vélo — station → station</div>
+                        <div class="step-sub" id="step2-sub">—</div>
+                    </div>
+                    <div class="step-time" id="step2-time">—</div>
+                </div>
+
+                <div class="route-step">
+                    <div class="step-icon walk">🚶</div>
+                    <div class="step-text">
+                        <div class="step-name">Marche — station → arrivée</div>
+                        <div class="step-sub" id="step3-sub">—</div>
+                    </div>
+                    <div class="step-time" id="step3-time">—</div>
+                </div>
+
+                <div class="total-time-bar">
+                    <span class="total-label">⏱ Durée totale estimée</span>
+                    <span class="total-value" id="total-time">—</span>
+                </div>
+
+                <div class="action-btns">
+                    <button class="btn btn-secondary" onclick="resetMap()">↺ Recommencer</button>
+                </div>
+            </div>
+
+            <!-- Selected stations info (shown before calculate) -->
+            <div class="sidebar-section hidden" id="stationInfoPanel">
+                <div class="section-label">Stations sélectionnées</div>
+                <div style="font-size:0.85rem; color:#94a3b8; line-height:1.6;">
+                    <div>🟢 <strong>Départ :</strong> <span id="start-station-display">—</span></div>
+                    <div style="margin-top:0.4rem;">🔵 <strong>Arrivée :</strong> <span id="end-station-display">—</span></div>
+                </div>
+                <div class="action-btns" style="margin-top:0.75rem;">
+                    <button class="btn btn-primary" id="calcBtn" onclick="calculatePath()" disabled>Calculer le trajet</button>
+                </div>
+            </div>
+
+            <!-- Last itinerary -->
+            {% if user.lastitinerary %}
+            <div class="sidebar-section">
+                <div class="section-label">Dernier trajet</div>
+                <div class="last-itin">
+                    <strong>Enregistré :</strong><br>{{ user.lastitinerary }}
+                </div>
+            </div>
+            {% endif %}
+
+        </aside>
+
+        <!-- ── MAP AREA ── -->
+        <div class="map-wrap">
+            <div id="map"></div>
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                <div class="loading-text" id="loadingText">Chargement…</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // ── MAP INIT ──
+        var map = L.map('map', { zoomControl: true }).setView([46.5, 2.5], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        let stationsLayer   = L.layerGroup().addTo(map);
+        let routeLayer      = L.layerGroup().addTo(map);
+        let userMarkersLayer = L.layerGroup().addTo(map);
+
+        // ── STATE ──
+        let appState = {
+            step: 0,
+            userStart: null,
+            userEnd: null,
+            selectedCity: null,
+            startStation: null,
+            endStation: null
+        };
+
+        const cityCoords = {
+            'Dublin':     [53.3498, -6.2603],
+            'Lyon':       [45.764,   4.835],
+            'Luxembourg': [49.6116,  6.1319],
+            'Toulouse':   [43.604,   1.444],
+            'Paris':      [48.8566,  2.3522],
+            'Marseille':  [43.2965,  5.3698],
+            'Brisbane':   [-27.4698, 153.0251],
+            'Bruxelles':  [50.8503,  4.3517],
+            'Namur':      [50.4674,  4.8720],
+            'Santander':  [43.4623, -3.8099],
+            'Seville':    [37.3891, -5.9845],
+            'Valence':    [39.4699, -0.3763],
+            'Toyama':     [36.6959,  137.2137]
+        };
+
+        // ── HELPERS ──
+        function setInstruction(text, active = false) {
+            document.getElementById('instruction-text').innerText = text;
+            const box = document.getElementById('instructionBox');
+            box.classList.toggle('step-active', active);
+        }
+
+        function showLoading(text) {
+            document.getElementById('loadingText').innerText = text || 'Chargement…';
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds && seconds !== 0) return '—';
+            const m = Math.round(seconds / 60);
+            if (m < 60) return `${m} min`;
+            const h = Math.floor(m / 60);
+            const rem = m % 60;
+            return rem > 0 ? `${h}h${String(rem).padStart(2,'0')}` : `${h}h`;
+        }
+        function formatDistance(meters) {
+            if (!meters && meters !== 0) return '—';
+            if (meters < 1000) return `${Math.round(meters)} m`;
+            return `${(meters/1000).toFixed(1)} km`;
+        }
+
+        function addMarker(latlng, color, title) {
+            return L.circleMarker(latlng, {
+                radius: 9, fillColor: color, color: '#fff',
+                weight: 2, opacity: 1, fillOpacity: 0.9
+            }).addTo(userMarkersLayer).bindPopup(title);
+        }
+
+        // ── CITY CHANGE ──
+        document.getElementById('citySelect').addEventListener('change', function () {
+            const city = this.value;
+            appState.selectedCity = city;
+            if (city && cityCoords[city]) {
+                map.setView(cityCoords[city], 13);
+                resetMap();
+                appState.step = 1;
+                appState.selectedCity = city;
+                setInstruction('Cliquez sur la carte pour choisir votre point de départ.', true);
+                // Save preferred city
+                fetch('/api/updateProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city: city })
+                });
+            } else {
+                appState.step = 0;
+                setInstruction('Sélectionnez une ville pour commencer.');
+            }
+        });
+
+        // ── MAP CLICK ──
+        map.on('click', function (e) {
+            if (!appState.selectedCity) {
+                setInstruction('⚠️ Choisissez d\'abord une ville !', false);
+                return;
+            }
+            if (appState.step === 1) {
+                appState.userStart = e.latlng;
+                addMarker(appState.userStart, '#22d3ee', '📍 Votre départ');
+                appState.step = 2;
+                showLoading('Recherche des stations proches…');
+                setInstruction('Recherche des stations de départ…');
+                getStationsNearby(appState.userStart.lat, appState.userStart.lng, 'start');
+            } else if (appState.step === 3) {
+                appState.userEnd = e.latlng;
+                addMarker(appState.userEnd, '#f59e0b', '🏁 Votre destination');
+                appState.step = 4;
+                showLoading('Recherche des stations d\'arrivée…');
+                setInstruction('Recherche des stations d\'arrivée…');
+                getStationsNearby(appState.userEnd.lat, appState.userEnd.lng, 'end');
+            }
+        });
+
+        // ── GET STATIONS ──
+        async function getStationsNearby(lat, lng, mode) {
+            try {
+                const res = await fetch(`/api/getBikesAround?contract=${appState.selectedCity}&lat=${lat}&lng=${lng}&mode=${mode}`);
+                const data = await res.json();
+                hideLoading();
+                if (data.error) throw new Error(data.error);
+
+                const stations = data.stations || [];
+                stationsLayer.clearLayers();
+
+                if (stations.length === 0) {
+                    setInstruction('Aucune station disponible à proximité. Cliquez ailleurs.', false);
+                    appState.step = (mode === 'start' ? 1 : 3);
+                    return;
+                }
+
+                stations.forEach(s => {
+                    const valid = mode === 'start' ? s.available_bikes > 0 : s.available_bike_stands > 0;
+                    const color = valid ? '#22c55e' : '#ef4444';
+                    const count = mode === 'start' ? s.available_bikes : s.available_bike_stands;
+                    const countLabel = mode === 'start' ? 'vélos dispo' : 'places dispo';
+
+                    const icon = L.divIcon({
+                        html: `<div style="background:${color};color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4)">${count}</div>`,
+                        className: '',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16]
+                    });
+
+                    const marker = L.marker([s.lat, s.lng], { icon }).addTo(stationsLayer);
+                    let popup = `<div style="font-family:Inter,sans-serif;min-width:180px">
+                        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${s.name}</div>
+                        <div style="font-size:0.8rem;color:${color};font-weight:600;margin-bottom:6px">${count} ${countLabel}</div>
+                        <div style="font-size:0.78rem;color:#666;margin-bottom:8px">Distance : ${Math.round(s.distance * 1000)} m</div>`;
+                    if (valid) {
+                        popup += `<button onclick="selectStation('${mode}','${s.name.replace(/'/g,"\\'")}',${s.lat},${s.lng})"
+                            style="width:100%;padding:6px;background:#22d3ee;color:#0f172a;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:0.82rem">
+                            ✓ Choisir cette station</button>`;
+                    } else {
+                        popup += `<div style="font-size:0.78rem;color:#ef4444;font-style:italic">Indisponible</div>`;
+                    }
+                    popup += '</div>';
+                    marker.bindPopup(popup);
+                });
+
+                setInstruction(
+                    `Choisissez une station ${mode === 'start' ? 'de départ' : 'd\'arrivée'} (cliquez sur un marqueur numéroté).`,
+                    true
+                );
+            } catch (e) {
+                hideLoading();
+                console.error(e);
+                setInstruction('Erreur : ' + e.message);
+                appState.step = (mode === 'start' ? 1 : 3);
+            }
+        }
+
+        // ── SELECT STATION ──
+        window.selectStation = function (mode, name, lat, lng) {
+            stationsLayer.clearLayers();
+            if (mode === 'start') {
+                appState.startStation = { name, lat, lng };
+                document.getElementById('start-station-display').innerText = name;
+                const icon = L.divIcon({
+                    html: `<div style="background:#22c55e;color:white;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.4)">🚲 Départ</div>`,
+                    className: '', iconAnchor: [30, 12]
+                });
+                L.marker([lat, lng], { icon }).addTo(routeLayer).bindPopup(`<b>Station départ :</b> ${name}`);
+                document.getElementById('stationInfoPanel').classList.remove('hidden');
+                setInstruction('✅ Station de départ choisie. Cliquez maintenant sur votre destination.', true);
+                appState.step = 3;
+            } else {
+                appState.endStation = { name, lat, lng };
+                document.getElementById('end-station-display').innerText = name;
+                const icon = L.divIcon({
+                    html: `<div style="background:#f59e0b;color:white;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.4)">🏁 Arrivée</div>`,
+                    className: '', iconAnchor: [30, 12]
+                });
+                L.marker([lat, lng], { icon }).addTo(routeLayer).bindPopup(`<b>Station arrivée :</b> ${name}`);
+                document.getElementById('calcBtn').disabled = false;
+                setInstruction('✅ Trajet prêt ! Cliquez sur "Calculer le trajet".', true);
+                appState.step = 5;
+            }
+        };
+
+        // ── CALCULATE PATH ──
+        window.calculatePath = async function () {
+            if (!appState.userStart || !appState.startStation || !appState.endStation || !appState.userEnd) {
+                return;
+            }
+            showLoading('Calcul de l\'itinéraire…');
+            try {
+                let q = `user_start_lat=${appState.userStart.lat}&user_start_lng=${appState.userStart.lng}`;
+                q += `&station_start_lat=${appState.startStation.lat}&station_start_lng=${appState.startStation.lng}`;
+                q += `&station_end_lat=${appState.endStation.lat}&station_end_lng=${appState.endStation.lng}`;
+                q += `&user_end_lat=${appState.userEnd.lat}&user_end_lng=${appState.userEnd.lng}`;
+
+                const res = await fetch(`/api/getTrajectory?${q}`);
+                const data = await res.json();
+                hideLoading();
+                if (data.error) throw new Error(data.error);
+
+                // Clear & redraw
+                routeLayer.clearLayers();
+
+                // Station markers
+                const iconStart = L.divIcon({ html:`<div style="background:#22c55e;color:white;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.4)">🚲 Départ</div>`, className:'', iconAnchor:[30,12] });
+                const iconEnd   = L.divIcon({ html:`<div style="background:#f59e0b;color:white;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.4)">🏁 Arrivée</div>`, className:'', iconAnchor:[30,12] });
+                L.marker([appState.startStation.lat, appState.startStation.lng], { icon: iconStart }).addTo(routeLayer).bindPopup(`<b>Station départ :</b> ${appState.startStation.name}`);
+                L.marker([appState.endStation.lat,   appState.endStation.lng],   { icon: iconEnd   }).addTo(routeLayer).bindPopup(`<b>Station arrivée :</b> ${appState.endStation.name}`);
+
+                // Paths
+                if (data.path1) L.geoJSON(data.path1, { style: { color: '#60a5fa', weight: 4, dashArray: '8,8', opacity: 0.85 } }).addTo(routeLayer);
+                if (data.path2) L.geoJSON(data.path2, { style: { color: '#22d3ee', weight: 5, opacity: 0.95 } }).addTo(routeLayer);
+                if (data.path3) L.geoJSON(data.path3, { style: { color: '#60a5fa', weight: 4, dashArray: '8,8', opacity: 0.85 } }).addTo(routeLayer);
+
+                // ── TIMES ──
+                const s1 = data.summary1, s2 = data.summary2, s3 = data.summary3;
+
+                document.getElementById('step1-time').innerText = s1 ? formatDuration(s1.duration) : '—';
+                document.getElementById('step1-sub').innerText  = s1 ? formatDistance(s1.distance) : '';
+                document.getElementById('step2-time').innerText = s2 ? formatDuration(s2.duration) : '—';
+                document.getElementById('step2-sub').innerText  = s2 ? formatDistance(s2.distance) : '';
+                document.getElementById('step3-time').innerText = s3 ? formatDuration(s3.duration) : '—';
+                document.getElementById('step3-sub').innerText  = s3 ? formatDistance(s3.distance) : '';
+
+                const totalSec = (s1 ? s1.duration : 0) + (s2 ? s2.duration : 0) + (s3 ? s3.duration : 0);
+                const totalDist = (s1 ? s1.distance : 0) + (s2 ? s2.distance : 0) + (s3 ? s3.distance : 0);
+                document.getElementById('total-time').innerText = formatDuration(totalSec) + (totalDist ? ' · ' + formatDistance(totalDist) : '');
+
+                document.getElementById('routeCard').classList.add('visible');
+                document.getElementById('stationInfoPanel').classList.add('hidden');
+                setInstruction('🎉 Trajet calculé ! Bleu pointillé = marche · Cyan = vélo', true);
+
+                // Fit map
+                const group = L.featureGroup();
+                [L.marker(appState.userStart), L.marker(appState.userEnd)].forEach(m => group.addLayer(m));
+                ['path1','path2','path3'].forEach(k => { if(data[k]) L.geoJSON(data[k]).eachLayer(l => group.addLayer(l)); });
+                map.fitBounds(group.getBounds(), { padding: [50, 50] });
+
+                // Save to profile
+                const itinStr = `${appState.selectedCity} : ${appState.startStation.name} → ${appState.endStation.name} (${formatDuration(totalSec)})`;
+                fetch('/api/updateProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city: appState.selectedCity, itinerary: itinStr })
+                });
+
+            } catch (e) {
+                hideLoading();
+                console.error(e);
+                setInstruction('❌ Erreur : ' + e.message);
+            }
+        };
+
+        // ── RESET ──
+        window.resetMap = function () {
+            appState.step = appState.selectedCity ? 1 : 0;
+            appState.userStart = appState.userEnd = appState.startStation = appState.endStation = null;
+            userMarkersLayer.clearLayers();
+            stationsLayer.clearLayers();
+            routeLayer.clearLayers();
+            document.getElementById('routeCard').classList.remove('visible');
+            document.getElementById('stationInfoPanel').classList.add('hidden');
+            document.getElementById('calcBtn').disabled = true;
+            document.getElementById('start-station-display').innerText = '—';
+            document.getElementById('end-station-display').innerText = '—';
+            setInstruction(
+                appState.selectedCity
+                    ? 'Cliquez sur la carte pour choisir votre point de départ.'
+                    : 'Sélectionnez une ville pour commencer.',
+                !!appState.selectedCity
+            );
+        };
+
+        // ── INIT from user profile ──
+        var initialCity = "{{ user_city }}";
+        if (initialCity && initialCity !== "None" && cityCoords[initialCity]) {
+            document.getElementById('citySelect').value = initialCity;
+            appState.selectedCity = initialCity;
+            appState.step = 1;
+            map.setView(cityCoords[initialCity], 13);
+            setInstruction('Cliquez sur la carte pour choisir votre point de départ.', true);
+        }
+    </script>
+</body>
+</html>
