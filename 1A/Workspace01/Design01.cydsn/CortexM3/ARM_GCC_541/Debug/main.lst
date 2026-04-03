@@ -1,0 +1,1192 @@
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.main,"ax",%progbits
+  20              		.align	2
+  21              		.global	main
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	main, %function
+  25              	main:
+  26              	.LFB64:
+  27              		.file 1 "main.c"
+   1:main.c        **** #include <project.h>
+   2:main.c        **** #include <stdio.h>
+   3:main.c        **** 
+   4:main.c        **** int main()
+   5:main.c        **** {
+  28              		.loc 1 5 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 80
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 70B5     		push	{r4, r5, r6, lr}
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 4, -16
+  35              		.cfi_offset 5, -12
+  36              		.cfi_offset 6, -8
+  37              		.cfi_offset 14, -4
+  38 0002 94B0     		sub	sp, sp, #80
+  39              		.cfi_def_cfa_offset 96
+   6:main.c        ****     char message[80];
+   7:main.c        ****     CyGlobalIntEnable; 
+  40              		.loc 1 7 0
+  41              		.syntax unified
+  42              	@ 7 "main.c" 1
+  43 0004 62B6     		CPSIE   i
+  44              	@ 0 "" 2
+   8:main.c        ****     
+   9:main.c        ****     // Démarrage
+  10:main.c        ****     Timer_1_Start();
+  45              		.loc 1 10 0
+  46              		.thumb
+  47              		.syntax unified
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 2
+
+
+  48 0006 FFF7FEFF 		bl	Timer_1_Start
+  49              	.LVL0:
+  11:main.c        ****     Timer_2_Start();
+  50              		.loc 1 11 0
+  51 000a FFF7FEFF 		bl	Timer_2_Start
+  52              	.LVL1:
+  12:main.c        ****     UART_1_Start();
+  53              		.loc 1 12 0
+  54 000e FFF7FEFF 		bl	UART_1_Start
+  55              	.LVL2:
+  13:main.c        ****     UART_2_Start();
+  56              		.loc 1 13 0
+  57 0012 FFF7FEFF 		bl	UART_2_Start
+  58              	.LVL3:
+  59              	.L6:
+  60              	.LBB2:
+  14:main.c        ****     
+  15:main.c        **** 
+  16:main.c        ****     for(;;)
+  17:main.c        ****     {
+  18:main.c        ****         
+  19:main.c        **** 
+  20:main.c        ****         Timer_1_WriteCounter(16777215);
+  61              		.loc 1 20 0
+  62 0016 6FF07F40 		mvn	r0, #-16777216
+  63 001a FFF7FEFF 		bl	Timer_1_WriteCounter
+  64              	.LVL4:
+  21:main.c        ****         Timer_2_WriteCounter(16777215);
+  65              		.loc 1 21 0
+  66 001e 6FF07F40 		mvn	r0, #-16777216
+  67 0022 FFF7FEFF 		bl	Timer_2_WriteCounter
+  68              	.LVL5:
+  22:main.c        ****         
+  23:main.c        ****         trigger_Write(1);
+  69              		.loc 1 23 0
+  70 0026 0120     		movs	r0, #1
+  71 0028 FFF7FEFF 		bl	trigger_Write
+  72              	.LVL6:
+  24:main.c        ****         CyDelayUs(10);                                    
+  73              		.loc 1 24 0
+  74 002c 0A20     		movs	r0, #10
+  75 002e FFF7FEFF 		bl	CyDelayUs
+  76              	.LVL7:
+  25:main.c        ****         trigger_Write(0);
+  77              		.loc 1 25 0
+  78 0032 0020     		movs	r0, #0
+  79 0034 FFF7FEFF 		bl	trigger_Write
+  80              	.LVL8:
+  26:main.c        ****         
+  27:main.c        ****         CyDelay(50); 
+  81              		.loc 1 27 0
+  82 0038 3220     		movs	r0, #50
+  83 003a FFF7FEFF 		bl	CyDelay
+  84              	.LVL9:
+  28:main.c        ****         
+  29:main.c        ****         uint32 valeur_lue = Timer_1_ReadCounter();
+  85              		.loc 1 29 0
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 3
+
+
+  86 003e FFF7FEFF 		bl	Timer_1_ReadCounter
+  87              	.LVL10:
+  30:main.c        ****         uint32 ticks_ecoules = 16777215 - valeur_lue;
+  88              		.loc 1 30 0
+  89 0042 C0F1FF13 		rsb	r3, r0, #16711935
+  90 0046 03F57F43 		add	r3, r3, #65280
+  91              	.LVL11:
+  31:main.c        ****         
+  32:main.c        ****         uint32 microsecondes = ticks_ecoules / 24;
+  33:main.c        ****         int dist = (int)(microsecondes / 58);
+  92              		.loc 1 33 0
+  93 004a 174A     		ldr	r2, .L8
+  94 004c A2FB0312 		umull	r1, r2, r2, r3
+  95 0050 120A     		lsrs	r2, r2, #8
+  96              	.LVL12:
+  34:main.c        ****         
+  35:main.c        ****         // d'affichage
+  36:main.c        ****         if (dist >= 1 && dist <= 50) {
+  97              		.loc 1 36 0
+  98 0052 561E     		subs	r6, r2, #1
+  99 0054 312E     		cmp	r6, #49
+ 100 0056 04D8     		bhi	.L2
+  37:main.c        ****             sprintf(message, "distance : %d cm (Ticks: %lu)\r\n", dist, ticks_ecoules);
+ 101              		.loc 1 37 0
+ 102 0058 1449     		ldr	r1, .L8+4
+ 103 005a 6846     		mov	r0, sp
+ 104              	.LVL13:
+ 105 005c FFF7FEFF 		bl	sprintf
+ 106              	.LVL14:
+ 107 0060 07E0     		b	.L3
+ 108              	.LVL15:
+ 109              	.L2:
+  38:main.c        ****         } else {
+  39:main.c        ****             sprintf(message, "Distance : --- cm (Hors portee)\r\n");
+ 110              		.loc 1 39 0
+ 111 0062 6C46     		mov	r4, sp
+ 112 0064 124D     		ldr	r5, .L8+8
+ 113 0066 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 114              	.LVL16:
+ 115 0068 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 116 006a 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 117 006c 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 118 006e 2B68     		ldr	r3, [r5]
+ 119 0070 2380     		strh	r3, [r4]	@ movhi
+ 120              	.L3:
+  40:main.c        ****         }
+  41:main.c        ****         UART_1_PutString(message);
+ 121              		.loc 1 41 0
+ 122 0072 6846     		mov	r0, sp
+ 123 0074 FFF7FEFF 		bl	UART_1_PutString
+ 124              	.LVL17:
+  42:main.c        ****         
+  43:main.c        ****         // Signal laser 
+  44:main.c        ****         if (dist >= 1 && dist <= 30) {
+ 125              		.loc 1 44 0
+ 126 0078 1D2E     		cmp	r6, #29
+ 127 007a 07D8     		bhi	.L4
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 4
+
+
+  45:main.c        ****             sprintf(message,"1\n");
+ 128              		.loc 1 45 0
+ 129 007c 0D4B     		ldr	r3, .L8+12
+ 130 007e 1B68     		ldr	r3, [r3]
+ 131 0080 ADF80030 		strh	r3, [sp]	@ movhi
+ 132 0084 1B0C     		lsrs	r3, r3, #16
+ 133 0086 8DF80230 		strb	r3, [sp, #2]
+ 134 008a 06E0     		b	.L5
+ 135              	.L4:
+  46:main.c        ****         } else {
+  47:main.c        ****             sprintf(message, "0\n");
+ 136              		.loc 1 47 0
+ 137 008c 0A4B     		ldr	r3, .L8+16
+ 138 008e 1B68     		ldr	r3, [r3]
+ 139 0090 ADF80030 		strh	r3, [sp]	@ movhi
+ 140 0094 1B0C     		lsrs	r3, r3, #16
+ 141 0096 8DF80230 		strb	r3, [sp, #2]
+ 142              	.L5:
+  48:main.c        ****         }
+  49:main.c        ****         UART_1_PutString(message); 
+ 143              		.loc 1 49 0
+ 144 009a 6846     		mov	r0, sp
+ 145 009c FFF7FEFF 		bl	UART_1_PutString
+ 146              	.LVL18:
+  50:main.c        ****         UART_2_PutString(message); 
+ 147              		.loc 1 50 0
+ 148 00a0 6846     		mov	r0, sp
+ 149 00a2 FFF7FEFF 		bl	UART_2_PutString
+ 150              	.LVL19:
+ 151              	.LBE2:
+  51:main.c        ****         
+  52:main.c        ****         // Temp boucle
+  53:main.c        ****         // uint32 time_ms = 16777215 - Timer_2_ReadCounter();
+  54:main.c        ****         //sprintf(message, "[%lu ms] Distance : %d cm\r\n", time_ms, dist);
+  55:main.c        ****         
+  56:main.c        ****     }
+ 152              		.loc 1 56 0
+ 153 00a6 B6E7     		b	.L6
+ 154              	.L9:
+ 155              		.align	2
+ 156              	.L8:
+ 157 00a8 0399142F 		.word	789879043
+ 158 00ac 00000000 		.word	.LC0
+ 159 00b0 20000000 		.word	.LC1
+ 160 00b4 44000000 		.word	.LC2
+ 161 00b8 48000000 		.word	.LC3
+ 162              		.cfi_endproc
+ 163              	.LFE64:
+ 164              		.size	main, .-main
+ 165              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 166              		.align	2
+ 167              	.LC0:
+ 168 0000 64697374 		.ascii	"distance : %d cm (Ticks: %lu)\015\012\000"
+ 168      616E6365 
+ 168      203A2025 
+ 168      6420636D 
+ 168      20285469 
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 5
+
+
+ 169              	.LC1:
+ 170 0020 44697374 		.ascii	"Distance : --- cm (Hors portee)\015\012\000"
+ 170      616E6365 
+ 170      203A202D 
+ 170      2D2D2063 
+ 170      6D202848 
+ 171 0042 0000     		.space	2
+ 172              	.LC2:
+ 173 0044 310A00   		.ascii	"1\012\000"
+ 174 0047 00       		.space	1
+ 175              	.LC3:
+ 176 0048 300A00   		.ascii	"0\012\000"
+ 177              		.text
+ 178              	.Letext0:
+ 179              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 180              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 181              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 182              		.file 5 "Generated_Source\\PSoC5/Timer_1.h"
+ 183              		.file 6 "Generated_Source\\PSoC5/Timer_2.h"
+ 184              		.file 7 "Generated_Source\\PSoC5/trigger.h"
+ 185              		.file 8 "Generated_Source\\PSoC5/CyLib.h"
+ 186              		.file 9 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 187              		.file 10 "Generated_Source\\PSoC5/UART_1.h"
+ 188              		.file 11 "Generated_Source\\PSoC5/UART_2.h"
+ 189              		.file 12 "Generated_Source\\PSoC5/core_cm3.h"
+ 190              		.section	.debug_info,"",%progbits
+ 191              	.Ldebug_info0:
+ 192 0000 D3020000 		.4byte	0x2d3
+ 193 0004 0400     		.2byte	0x4
+ 194 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 195 000a 04       		.byte	0x4
+ 196 000b 01       		.uleb128 0x1
+ 197 000c 67000000 		.4byte	.LASF35
+ 198 0010 0C       		.byte	0xc
+ 199 0011 1C020000 		.4byte	.LASF36
+ 200 0015 F5000000 		.4byte	.LASF37
+ 201 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 202 001d 00000000 		.4byte	0
+ 203 0021 00000000 		.4byte	.Ldebug_line0
+ 204 0025 02       		.uleb128 0x2
+ 205 0026 04       		.byte	0x4
+ 206 0027 07       		.byte	0x7
+ 207 0028 97010000 		.4byte	.LASF0
+ 208 002c 02       		.uleb128 0x2
+ 209 002d 01       		.byte	0x1
+ 210 002e 06       		.byte	0x6
+ 211 002f 5B020000 		.4byte	.LASF1
+ 212 0033 02       		.uleb128 0x2
+ 213 0034 01       		.byte	0x1
+ 214 0035 08       		.byte	0x8
+ 215 0036 59000000 		.4byte	.LASF2
+ 216 003a 02       		.uleb128 0x2
+ 217 003b 02       		.byte	0x2
+ 218 003c 05       		.byte	0x5
+ 219 003d 3C020000 		.4byte	.LASF3
+ 220 0041 02       		.uleb128 0x2
+ 221 0042 02       		.byte	0x2
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 6
+
+
+ 222 0043 07       		.byte	0x7
+ 223 0044 32010000 		.4byte	.LASF4
+ 224 0048 03       		.uleb128 0x3
+ 225 0049 2E000000 		.4byte	.LASF9
+ 226 004d 02       		.byte	0x2
+ 227 004e 3F       		.byte	0x3f
+ 228 004f 53000000 		.4byte	0x53
+ 229 0053 02       		.uleb128 0x2
+ 230 0054 04       		.byte	0x4
+ 231 0055 05       		.byte	0x5
+ 232 0056 46020000 		.4byte	.LASF5
+ 233 005a 02       		.uleb128 0x2
+ 234 005b 04       		.byte	0x4
+ 235 005c 07       		.byte	0x7
+ 236 005d 20010000 		.4byte	.LASF6
+ 237 0061 02       		.uleb128 0x2
+ 238 0062 08       		.byte	0x8
+ 239 0063 05       		.byte	0x5
+ 240 0064 00020000 		.4byte	.LASF7
+ 241 0068 02       		.uleb128 0x2
+ 242 0069 08       		.byte	0x8
+ 243 006a 07       		.byte	0x7
+ 244 006b A4010000 		.4byte	.LASF8
+ 245 006f 04       		.uleb128 0x4
+ 246 0070 04       		.byte	0x4
+ 247 0071 05       		.byte	0x5
+ 248 0072 696E7400 		.ascii	"int\000"
+ 249 0076 03       		.uleb128 0x3
+ 250 0077 EF010000 		.4byte	.LASF10
+ 251 007b 03       		.byte	0x3
+ 252 007c 2C       		.byte	0x2c
+ 253 007d 48000000 		.4byte	0x48
+ 254 0081 05       		.uleb128 0x5
+ 255 0082 90010000 		.4byte	.LASF11
+ 256 0086 04       		.byte	0x4
+ 257 0087 EA01     		.2byte	0x1ea
+ 258 0089 5A000000 		.4byte	0x5a
+ 259 008d 02       		.uleb128 0x2
+ 260 008e 04       		.byte	0x4
+ 261 008f 04       		.byte	0x4
+ 262 0090 53000000 		.4byte	.LASF12
+ 263 0094 02       		.uleb128 0x2
+ 264 0095 08       		.byte	0x8
+ 265 0096 04       		.byte	0x4
+ 266 0097 67010000 		.4byte	.LASF13
+ 267 009b 02       		.uleb128 0x2
+ 268 009c 01       		.byte	0x1
+ 269 009d 08       		.byte	0x8
+ 270 009e 23020000 		.4byte	.LASF14
+ 271 00a2 02       		.uleb128 0x2
+ 272 00a3 08       		.byte	0x8
+ 273 00a4 04       		.byte	0x4
+ 274 00a5 4F020000 		.4byte	.LASF15
+ 275 00a9 02       		.uleb128 0x2
+ 276 00aa 04       		.byte	0x4
+ 277 00ab 07       		.byte	0x7
+ 278 00ac F7010000 		.4byte	.LASF16
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 7
+
+
+ 279 00b0 06       		.uleb128 0x6
+ 280 00b1 81010000 		.4byte	.LASF38
+ 281 00b5 01       		.byte	0x1
+ 282 00b6 04       		.byte	0x4
+ 283 00b7 6F000000 		.4byte	0x6f
+ 284 00bb 00000000 		.4byte	.LFB64
+ 285 00bf BC000000 		.4byte	.LFE64-.LFB64
+ 286 00c3 01       		.uleb128 0x1
+ 287 00c4 9C       		.byte	0x9c
+ 288 00c5 26020000 		.4byte	0x226
+ 289 00c9 07       		.uleb128 0x7
+ 290 00ca 00000000 		.4byte	.LASF17
+ 291 00ce 01       		.byte	0x1
+ 292 00cf 06       		.byte	0x6
+ 293 00d0 26020000 		.4byte	0x226
+ 294 00d4 03       		.uleb128 0x3
+ 295 00d5 91       		.byte	0x91
+ 296 00d6 A07F     		.sleb128 -96
+ 297 00d8 08       		.uleb128 0x8
+ 298 00d9 16000000 		.4byte	.LBB2
+ 299 00dd 90000000 		.4byte	.LBE2-.LBB2
+ 300 00e1 01020000 		.4byte	0x201
+ 301 00e5 09       		.uleb128 0x9
+ 302 00e6 23000000 		.4byte	.LASF18
+ 303 00ea 01       		.byte	0x1
+ 304 00eb 1D       		.byte	0x1d
+ 305 00ec 81000000 		.4byte	0x81
+ 306 00f0 00000000 		.4byte	.LLST0
+ 307 00f4 09       		.uleb128 0x9
+ 308 00f5 0E020000 		.4byte	.LASF19
+ 309 00f9 01       		.byte	0x1
+ 310 00fa 1E       		.byte	0x1e
+ 311 00fb 81000000 		.4byte	0x81
+ 312 00ff 1E000000 		.4byte	.LLST1
+ 313 0103 09       		.uleb128 0x9
+ 314 0104 6E010000 		.4byte	.LASF20
+ 315 0108 01       		.byte	0x1
+ 316 0109 20       		.byte	0x20
+ 317 010a 81000000 		.4byte	0x81
+ 318 010e 3C000000 		.4byte	.LLST2
+ 319 0112 09       		.uleb128 0x9
+ 320 0113 7C010000 		.4byte	.LASF21
+ 321 0117 01       		.byte	0x1
+ 322 0118 21       		.byte	0x21
+ 323 0119 6F000000 		.4byte	0x6f
+ 324 011d 6E000000 		.4byte	.LLST3
+ 325 0121 0A       		.uleb128 0xa
+ 326 0122 1E000000 		.4byte	.LVL4
+ 327 0126 47020000 		.4byte	0x247
+ 328 012a 38010000 		.4byte	0x138
+ 329 012e 0B       		.uleb128 0xb
+ 330 012f 01       		.uleb128 0x1
+ 331 0130 50       		.byte	0x50
+ 332 0131 05       		.uleb128 0x5
+ 333 0132 0C       		.byte	0xc
+ 334 0133 FFFFFF00 		.4byte	0xffffff
+ 335 0137 00       		.byte	0
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 8
+
+
+ 336 0138 0A       		.uleb128 0xa
+ 337 0139 26000000 		.4byte	.LVL5
+ 338 013d 52020000 		.4byte	0x252
+ 339 0141 4F010000 		.4byte	0x14f
+ 340 0145 0B       		.uleb128 0xb
+ 341 0146 01       		.uleb128 0x1
+ 342 0147 50       		.byte	0x50
+ 343 0148 05       		.uleb128 0x5
+ 344 0149 0C       		.byte	0xc
+ 345 014a FFFFFF00 		.4byte	0xffffff
+ 346 014e 00       		.byte	0
+ 347 014f 0A       		.uleb128 0xa
+ 348 0150 2C000000 		.4byte	.LVL6
+ 349 0154 5D020000 		.4byte	0x25d
+ 350 0158 62010000 		.4byte	0x162
+ 351 015c 0B       		.uleb128 0xb
+ 352 015d 01       		.uleb128 0x1
+ 353 015e 50       		.byte	0x50
+ 354 015f 01       		.uleb128 0x1
+ 355 0160 31       		.byte	0x31
+ 356 0161 00       		.byte	0
+ 357 0162 0A       		.uleb128 0xa
+ 358 0163 32000000 		.4byte	.LVL7
+ 359 0167 68020000 		.4byte	0x268
+ 360 016b 75010000 		.4byte	0x175
+ 361 016f 0B       		.uleb128 0xb
+ 362 0170 01       		.uleb128 0x1
+ 363 0171 50       		.byte	0x50
+ 364 0172 01       		.uleb128 0x1
+ 365 0173 3A       		.byte	0x3a
+ 366 0174 00       		.byte	0
+ 367 0175 0A       		.uleb128 0xa
+ 368 0176 38000000 		.4byte	.LVL8
+ 369 017a 5D020000 		.4byte	0x25d
+ 370 017e 88010000 		.4byte	0x188
+ 371 0182 0B       		.uleb128 0xb
+ 372 0183 01       		.uleb128 0x1
+ 373 0184 50       		.byte	0x50
+ 374 0185 01       		.uleb128 0x1
+ 375 0186 30       		.byte	0x30
+ 376 0187 00       		.byte	0
+ 377 0188 0A       		.uleb128 0xa
+ 378 0189 3E000000 		.4byte	.LVL9
+ 379 018d 73020000 		.4byte	0x273
+ 380 0191 9C010000 		.4byte	0x19c
+ 381 0195 0B       		.uleb128 0xb
+ 382 0196 01       		.uleb128 0x1
+ 383 0197 50       		.byte	0x50
+ 384 0198 02       		.uleb128 0x2
+ 385 0199 08       		.byte	0x8
+ 386 019a 32       		.byte	0x32
+ 387 019b 00       		.byte	0
+ 388 019c 0C       		.uleb128 0xc
+ 389 019d 42000000 		.4byte	.LVL10
+ 390 01a1 7E020000 		.4byte	0x27e
+ 391 01a5 0A       		.uleb128 0xa
+ 392 01a6 60000000 		.4byte	.LVL14
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 9
+
+
+ 393 01aa 89020000 		.4byte	0x289
+ 394 01ae C8010000 		.4byte	0x1c8
+ 395 01b2 0B       		.uleb128 0xb
+ 396 01b3 01       		.uleb128 0x1
+ 397 01b4 50       		.byte	0x50
+ 398 01b5 02       		.uleb128 0x2
+ 399 01b6 7D       		.byte	0x7d
+ 400 01b7 00       		.sleb128 0
+ 401 01b8 0B       		.uleb128 0xb
+ 402 01b9 01       		.uleb128 0x1
+ 403 01ba 51       		.byte	0x51
+ 404 01bb 05       		.uleb128 0x5
+ 405 01bc 03       		.byte	0x3
+ 406 01bd 00000000 		.4byte	.LC0
+ 407 01c1 0B       		.uleb128 0xb
+ 408 01c2 01       		.uleb128 0x1
+ 409 01c3 52       		.byte	0x52
+ 410 01c4 02       		.uleb128 0x2
+ 411 01c5 76       		.byte	0x76
+ 412 01c6 01       		.sleb128 1
+ 413 01c7 00       		.byte	0
+ 414 01c8 0A       		.uleb128 0xa
+ 415 01c9 78000000 		.4byte	.LVL17
+ 416 01cd 94020000 		.4byte	0x294
+ 417 01d1 DC010000 		.4byte	0x1dc
+ 418 01d5 0B       		.uleb128 0xb
+ 419 01d6 01       		.uleb128 0x1
+ 420 01d7 50       		.byte	0x50
+ 421 01d8 02       		.uleb128 0x2
+ 422 01d9 7D       		.byte	0x7d
+ 423 01da 00       		.sleb128 0
+ 424 01db 00       		.byte	0
+ 425 01dc 0A       		.uleb128 0xa
+ 426 01dd A0000000 		.4byte	.LVL18
+ 427 01e1 94020000 		.4byte	0x294
+ 428 01e5 F0010000 		.4byte	0x1f0
+ 429 01e9 0B       		.uleb128 0xb
+ 430 01ea 01       		.uleb128 0x1
+ 431 01eb 50       		.byte	0x50
+ 432 01ec 02       		.uleb128 0x2
+ 433 01ed 7D       		.byte	0x7d
+ 434 01ee 00       		.sleb128 0
+ 435 01ef 00       		.byte	0
+ 436 01f0 0D       		.uleb128 0xd
+ 437 01f1 A6000000 		.4byte	.LVL19
+ 438 01f5 9F020000 		.4byte	0x29f
+ 439 01f9 0B       		.uleb128 0xb
+ 440 01fa 01       		.uleb128 0x1
+ 441 01fb 50       		.byte	0x50
+ 442 01fc 02       		.uleb128 0x2
+ 443 01fd 7D       		.byte	0x7d
+ 444 01fe 00       		.sleb128 0
+ 445 01ff 00       		.byte	0
+ 446 0200 00       		.byte	0
+ 447 0201 0C       		.uleb128 0xc
+ 448 0202 0A000000 		.4byte	.LVL0
+ 449 0206 AA020000 		.4byte	0x2aa
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 10
+
+
+ 450 020a 0C       		.uleb128 0xc
+ 451 020b 0E000000 		.4byte	.LVL1
+ 452 020f B5020000 		.4byte	0x2b5
+ 453 0213 0C       		.uleb128 0xc
+ 454 0214 12000000 		.4byte	.LVL2
+ 455 0218 C0020000 		.4byte	0x2c0
+ 456 021c 0C       		.uleb128 0xc
+ 457 021d 16000000 		.4byte	.LVL3
+ 458 0221 CB020000 		.4byte	0x2cb
+ 459 0225 00       		.byte	0
+ 460 0226 0E       		.uleb128 0xe
+ 461 0227 9B000000 		.4byte	0x9b
+ 462 022b 36020000 		.4byte	0x236
+ 463 022f 0F       		.uleb128 0xf
+ 464 0230 A9000000 		.4byte	0xa9
+ 465 0234 4F       		.byte	0x4f
+ 466 0235 00       		.byte	0
+ 467 0236 10       		.uleb128 0x10
+ 468 0237 45010000 		.4byte	.LASF39
+ 469 023b 0C       		.byte	0xc
+ 470 023c 1207     		.2byte	0x712
+ 471 023e 42020000 		.4byte	0x242
+ 472 0242 11       		.uleb128 0x11
+ 473 0243 76000000 		.4byte	0x76
+ 474 0247 12       		.uleb128 0x12
+ 475 0248 BB010000 		.4byte	.LASF22
+ 476 024c BB010000 		.4byte	.LASF22
+ 477 0250 05       		.byte	0x5
+ 478 0251 6A       		.byte	0x6a
+ 479 0252 12       		.uleb128 0x12
+ 480 0253 52010000 		.4byte	.LASF23
+ 481 0257 52010000 		.4byte	.LASF23
+ 482 025b 06       		.byte	0x6
+ 483 025c 6A       		.byte	0x6a
+ 484 025d 12       		.uleb128 0x12
+ 485 025e 45000000 		.4byte	.LASF24
+ 486 0262 45000000 		.4byte	.LASF24
+ 487 0266 07       		.byte	0x7
+ 488 0267 26       		.byte	0x26
+ 489 0268 12       		.uleb128 0x12
+ 490 0269 86010000 		.4byte	.LASF25
+ 491 026d 86010000 		.4byte	.LASF25
+ 492 0271 08       		.byte	0x8
+ 493 0272 77       		.byte	0x77
+ 494 0273 12       		.uleb128 0x12
+ 495 0274 80020000 		.4byte	.LASF26
+ 496 0278 80020000 		.4byte	.LASF26
+ 497 027c 08       		.byte	0x8
+ 498 027d 76       		.byte	0x76
+ 499 027e 12       		.uleb128 0x12
+ 500 027f 28020000 		.4byte	.LASF27
+ 501 0283 28020000 		.4byte	.LASF27
+ 502 0287 05       		.byte	0x5
+ 503 0288 69       		.byte	0x69
+ 504 0289 12       		.uleb128 0x12
+ 505 028a 78020000 		.4byte	.LASF28
+ 506 028e 78020000 		.4byte	.LASF28
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 11
+
+
+ 507 0292 09       		.byte	0x9
+ 508 0293 E7       		.byte	0xe7
+ 509 0294 12       		.uleb128 0x12
+ 510 0295 67020000 		.4byte	.LASF29
+ 511 0299 67020000 		.4byte	.LASF29
+ 512 029d 0A       		.byte	0xa
+ 513 029e 8B       		.byte	0x8b
+ 514 029f 12       		.uleb128 0x12
+ 515 02a0 DE010000 		.4byte	.LASF30
+ 516 02a4 DE010000 		.4byte	.LASF30
+ 517 02a8 0B       		.byte	0xb
+ 518 02a9 8B       		.byte	0x8b
+ 519 02aa 12       		.uleb128 0x12
+ 520 02ab 15000000 		.4byte	.LASF31
+ 521 02af 15000000 		.4byte	.LASF31
+ 522 02b3 05       		.byte	0x5
+ 523 02b4 5A       		.byte	0x5a
+ 524 02b5 12       		.uleb128 0x12
+ 525 02b6 D0010000 		.4byte	.LASF32
+ 526 02ba D0010000 		.4byte	.LASF32
+ 527 02be 06       		.byte	0x6
+ 528 02bf 5A       		.byte	0x5a
+ 529 02c0 12       		.uleb128 0x12
+ 530 02c1 08000000 		.4byte	.LASF33
+ 531 02c5 08000000 		.4byte	.LASF33
+ 532 02c9 0A       		.byte	0xa
+ 533 02ca 54       		.byte	0x54
+ 534 02cb 12       		.uleb128 0x12
+ 535 02cc 38000000 		.4byte	.LASF34
+ 536 02d0 38000000 		.4byte	.LASF34
+ 537 02d4 0B       		.byte	0xb
+ 538 02d5 54       		.byte	0x54
+ 539 02d6 00       		.byte	0
+ 540              		.section	.debug_abbrev,"",%progbits
+ 541              	.Ldebug_abbrev0:
+ 542 0000 01       		.uleb128 0x1
+ 543 0001 11       		.uleb128 0x11
+ 544 0002 01       		.byte	0x1
+ 545 0003 25       		.uleb128 0x25
+ 546 0004 0E       		.uleb128 0xe
+ 547 0005 13       		.uleb128 0x13
+ 548 0006 0B       		.uleb128 0xb
+ 549 0007 03       		.uleb128 0x3
+ 550 0008 0E       		.uleb128 0xe
+ 551 0009 1B       		.uleb128 0x1b
+ 552 000a 0E       		.uleb128 0xe
+ 553 000b 55       		.uleb128 0x55
+ 554 000c 17       		.uleb128 0x17
+ 555 000d 11       		.uleb128 0x11
+ 556 000e 01       		.uleb128 0x1
+ 557 000f 10       		.uleb128 0x10
+ 558 0010 17       		.uleb128 0x17
+ 559 0011 00       		.byte	0
+ 560 0012 00       		.byte	0
+ 561 0013 02       		.uleb128 0x2
+ 562 0014 24       		.uleb128 0x24
+ 563 0015 00       		.byte	0
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 12
+
+
+ 564 0016 0B       		.uleb128 0xb
+ 565 0017 0B       		.uleb128 0xb
+ 566 0018 3E       		.uleb128 0x3e
+ 567 0019 0B       		.uleb128 0xb
+ 568 001a 03       		.uleb128 0x3
+ 569 001b 0E       		.uleb128 0xe
+ 570 001c 00       		.byte	0
+ 571 001d 00       		.byte	0
+ 572 001e 03       		.uleb128 0x3
+ 573 001f 16       		.uleb128 0x16
+ 574 0020 00       		.byte	0
+ 575 0021 03       		.uleb128 0x3
+ 576 0022 0E       		.uleb128 0xe
+ 577 0023 3A       		.uleb128 0x3a
+ 578 0024 0B       		.uleb128 0xb
+ 579 0025 3B       		.uleb128 0x3b
+ 580 0026 0B       		.uleb128 0xb
+ 581 0027 49       		.uleb128 0x49
+ 582 0028 13       		.uleb128 0x13
+ 583 0029 00       		.byte	0
+ 584 002a 00       		.byte	0
+ 585 002b 04       		.uleb128 0x4
+ 586 002c 24       		.uleb128 0x24
+ 587 002d 00       		.byte	0
+ 588 002e 0B       		.uleb128 0xb
+ 589 002f 0B       		.uleb128 0xb
+ 590 0030 3E       		.uleb128 0x3e
+ 591 0031 0B       		.uleb128 0xb
+ 592 0032 03       		.uleb128 0x3
+ 593 0033 08       		.uleb128 0x8
+ 594 0034 00       		.byte	0
+ 595 0035 00       		.byte	0
+ 596 0036 05       		.uleb128 0x5
+ 597 0037 16       		.uleb128 0x16
+ 598 0038 00       		.byte	0
+ 599 0039 03       		.uleb128 0x3
+ 600 003a 0E       		.uleb128 0xe
+ 601 003b 3A       		.uleb128 0x3a
+ 602 003c 0B       		.uleb128 0xb
+ 603 003d 3B       		.uleb128 0x3b
+ 604 003e 05       		.uleb128 0x5
+ 605 003f 49       		.uleb128 0x49
+ 606 0040 13       		.uleb128 0x13
+ 607 0041 00       		.byte	0
+ 608 0042 00       		.byte	0
+ 609 0043 06       		.uleb128 0x6
+ 610 0044 2E       		.uleb128 0x2e
+ 611 0045 01       		.byte	0x1
+ 612 0046 3F       		.uleb128 0x3f
+ 613 0047 19       		.uleb128 0x19
+ 614 0048 03       		.uleb128 0x3
+ 615 0049 0E       		.uleb128 0xe
+ 616 004a 3A       		.uleb128 0x3a
+ 617 004b 0B       		.uleb128 0xb
+ 618 004c 3B       		.uleb128 0x3b
+ 619 004d 0B       		.uleb128 0xb
+ 620 004e 49       		.uleb128 0x49
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 13
+
+
+ 621 004f 13       		.uleb128 0x13
+ 622 0050 8701     		.uleb128 0x87
+ 623 0052 19       		.uleb128 0x19
+ 624 0053 11       		.uleb128 0x11
+ 625 0054 01       		.uleb128 0x1
+ 626 0055 12       		.uleb128 0x12
+ 627 0056 06       		.uleb128 0x6
+ 628 0057 40       		.uleb128 0x40
+ 629 0058 18       		.uleb128 0x18
+ 630 0059 9742     		.uleb128 0x2117
+ 631 005b 19       		.uleb128 0x19
+ 632 005c 01       		.uleb128 0x1
+ 633 005d 13       		.uleb128 0x13
+ 634 005e 00       		.byte	0
+ 635 005f 00       		.byte	0
+ 636 0060 07       		.uleb128 0x7
+ 637 0061 34       		.uleb128 0x34
+ 638 0062 00       		.byte	0
+ 639 0063 03       		.uleb128 0x3
+ 640 0064 0E       		.uleb128 0xe
+ 641 0065 3A       		.uleb128 0x3a
+ 642 0066 0B       		.uleb128 0xb
+ 643 0067 3B       		.uleb128 0x3b
+ 644 0068 0B       		.uleb128 0xb
+ 645 0069 49       		.uleb128 0x49
+ 646 006a 13       		.uleb128 0x13
+ 647 006b 02       		.uleb128 0x2
+ 648 006c 18       		.uleb128 0x18
+ 649 006d 00       		.byte	0
+ 650 006e 00       		.byte	0
+ 651 006f 08       		.uleb128 0x8
+ 652 0070 0B       		.uleb128 0xb
+ 653 0071 01       		.byte	0x1
+ 654 0072 11       		.uleb128 0x11
+ 655 0073 01       		.uleb128 0x1
+ 656 0074 12       		.uleb128 0x12
+ 657 0075 06       		.uleb128 0x6
+ 658 0076 01       		.uleb128 0x1
+ 659 0077 13       		.uleb128 0x13
+ 660 0078 00       		.byte	0
+ 661 0079 00       		.byte	0
+ 662 007a 09       		.uleb128 0x9
+ 663 007b 34       		.uleb128 0x34
+ 664 007c 00       		.byte	0
+ 665 007d 03       		.uleb128 0x3
+ 666 007e 0E       		.uleb128 0xe
+ 667 007f 3A       		.uleb128 0x3a
+ 668 0080 0B       		.uleb128 0xb
+ 669 0081 3B       		.uleb128 0x3b
+ 670 0082 0B       		.uleb128 0xb
+ 671 0083 49       		.uleb128 0x49
+ 672 0084 13       		.uleb128 0x13
+ 673 0085 02       		.uleb128 0x2
+ 674 0086 17       		.uleb128 0x17
+ 675 0087 00       		.byte	0
+ 676 0088 00       		.byte	0
+ 677 0089 0A       		.uleb128 0xa
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 14
+
+
+ 678 008a 898201   		.uleb128 0x4109
+ 679 008d 01       		.byte	0x1
+ 680 008e 11       		.uleb128 0x11
+ 681 008f 01       		.uleb128 0x1
+ 682 0090 31       		.uleb128 0x31
+ 683 0091 13       		.uleb128 0x13
+ 684 0092 01       		.uleb128 0x1
+ 685 0093 13       		.uleb128 0x13
+ 686 0094 00       		.byte	0
+ 687 0095 00       		.byte	0
+ 688 0096 0B       		.uleb128 0xb
+ 689 0097 8A8201   		.uleb128 0x410a
+ 690 009a 00       		.byte	0
+ 691 009b 02       		.uleb128 0x2
+ 692 009c 18       		.uleb128 0x18
+ 693 009d 9142     		.uleb128 0x2111
+ 694 009f 18       		.uleb128 0x18
+ 695 00a0 00       		.byte	0
+ 696 00a1 00       		.byte	0
+ 697 00a2 0C       		.uleb128 0xc
+ 698 00a3 898201   		.uleb128 0x4109
+ 699 00a6 00       		.byte	0
+ 700 00a7 11       		.uleb128 0x11
+ 701 00a8 01       		.uleb128 0x1
+ 702 00a9 31       		.uleb128 0x31
+ 703 00aa 13       		.uleb128 0x13
+ 704 00ab 00       		.byte	0
+ 705 00ac 00       		.byte	0
+ 706 00ad 0D       		.uleb128 0xd
+ 707 00ae 898201   		.uleb128 0x4109
+ 708 00b1 01       		.byte	0x1
+ 709 00b2 11       		.uleb128 0x11
+ 710 00b3 01       		.uleb128 0x1
+ 711 00b4 31       		.uleb128 0x31
+ 712 00b5 13       		.uleb128 0x13
+ 713 00b6 00       		.byte	0
+ 714 00b7 00       		.byte	0
+ 715 00b8 0E       		.uleb128 0xe
+ 716 00b9 01       		.uleb128 0x1
+ 717 00ba 01       		.byte	0x1
+ 718 00bb 49       		.uleb128 0x49
+ 719 00bc 13       		.uleb128 0x13
+ 720 00bd 01       		.uleb128 0x1
+ 721 00be 13       		.uleb128 0x13
+ 722 00bf 00       		.byte	0
+ 723 00c0 00       		.byte	0
+ 724 00c1 0F       		.uleb128 0xf
+ 725 00c2 21       		.uleb128 0x21
+ 726 00c3 00       		.byte	0
+ 727 00c4 49       		.uleb128 0x49
+ 728 00c5 13       		.uleb128 0x13
+ 729 00c6 2F       		.uleb128 0x2f
+ 730 00c7 0B       		.uleb128 0xb
+ 731 00c8 00       		.byte	0
+ 732 00c9 00       		.byte	0
+ 733 00ca 10       		.uleb128 0x10
+ 734 00cb 34       		.uleb128 0x34
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 15
+
+
+ 735 00cc 00       		.byte	0
+ 736 00cd 03       		.uleb128 0x3
+ 737 00ce 0E       		.uleb128 0xe
+ 738 00cf 3A       		.uleb128 0x3a
+ 739 00d0 0B       		.uleb128 0xb
+ 740 00d1 3B       		.uleb128 0x3b
+ 741 00d2 05       		.uleb128 0x5
+ 742 00d3 49       		.uleb128 0x49
+ 743 00d4 13       		.uleb128 0x13
+ 744 00d5 3F       		.uleb128 0x3f
+ 745 00d6 19       		.uleb128 0x19
+ 746 00d7 3C       		.uleb128 0x3c
+ 747 00d8 19       		.uleb128 0x19
+ 748 00d9 00       		.byte	0
+ 749 00da 00       		.byte	0
+ 750 00db 11       		.uleb128 0x11
+ 751 00dc 35       		.uleb128 0x35
+ 752 00dd 00       		.byte	0
+ 753 00de 49       		.uleb128 0x49
+ 754 00df 13       		.uleb128 0x13
+ 755 00e0 00       		.byte	0
+ 756 00e1 00       		.byte	0
+ 757 00e2 12       		.uleb128 0x12
+ 758 00e3 2E       		.uleb128 0x2e
+ 759 00e4 00       		.byte	0
+ 760 00e5 3F       		.uleb128 0x3f
+ 761 00e6 19       		.uleb128 0x19
+ 762 00e7 3C       		.uleb128 0x3c
+ 763 00e8 19       		.uleb128 0x19
+ 764 00e9 6E       		.uleb128 0x6e
+ 765 00ea 0E       		.uleb128 0xe
+ 766 00eb 03       		.uleb128 0x3
+ 767 00ec 0E       		.uleb128 0xe
+ 768 00ed 3A       		.uleb128 0x3a
+ 769 00ee 0B       		.uleb128 0xb
+ 770 00ef 3B       		.uleb128 0x3b
+ 771 00f0 0B       		.uleb128 0xb
+ 772 00f1 00       		.byte	0
+ 773 00f2 00       		.byte	0
+ 774 00f3 00       		.byte	0
+ 775              		.section	.debug_loc,"",%progbits
+ 776              	.Ldebug_loc0:
+ 777              	.LLST0:
+ 778 0000 42000000 		.4byte	.LVL10
+ 779 0004 5C000000 		.4byte	.LVL13
+ 780 0008 0100     		.2byte	0x1
+ 781 000a 50       		.byte	0x50
+ 782 000b 62000000 		.4byte	.LVL15
+ 783 000f 68000000 		.4byte	.LVL16
+ 784 0013 0100     		.2byte	0x1
+ 785 0015 50       		.byte	0x50
+ 786 0016 00000000 		.4byte	0
+ 787 001a 00000000 		.4byte	0
+ 788              	.LLST1:
+ 789 001e 4A000000 		.4byte	.LVL11
+ 790 0022 5F000000 		.4byte	.LVL14-1
+ 791 0026 0100     		.2byte	0x1
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 16
+
+
+ 792 0028 53       		.byte	0x53
+ 793 0029 62000000 		.4byte	.LVL15
+ 794 002d 68000000 		.4byte	.LVL16
+ 795 0031 0100     		.2byte	0x1
+ 796 0033 53       		.byte	0x53
+ 797 0034 00000000 		.4byte	0
+ 798 0038 00000000 		.4byte	0
+ 799              	.LLST2:
+ 800 003c 4A000000 		.4byte	.LVL11
+ 801 0040 5F000000 		.4byte	.LVL14-1
+ 802 0044 0B00     		.2byte	0xb
+ 803 0046 73       		.byte	0x73
+ 804 0047 00       		.sleb128 0
+ 805 0048 F7       		.byte	0xf7
+ 806 0049 25       		.uleb128 0x25
+ 807 004a 48       		.byte	0x48
+ 808 004b F7       		.byte	0xf7
+ 809 004c 25       		.uleb128 0x25
+ 810 004d 1B       		.byte	0x1b
+ 811 004e F7       		.byte	0xf7
+ 812 004f 00       		.uleb128 0
+ 813 0050 9F       		.byte	0x9f
+ 814 0051 62000000 		.4byte	.LVL15
+ 815 0055 68000000 		.4byte	.LVL16
+ 816 0059 0B00     		.2byte	0xb
+ 817 005b 73       		.byte	0x73
+ 818 005c 00       		.sleb128 0
+ 819 005d F7       		.byte	0xf7
+ 820 005e 25       		.uleb128 0x25
+ 821 005f 48       		.byte	0x48
+ 822 0060 F7       		.byte	0xf7
+ 823 0061 25       		.uleb128 0x25
+ 824 0062 1B       		.byte	0x1b
+ 825 0063 F7       		.byte	0xf7
+ 826 0064 00       		.uleb128 0
+ 827 0065 9F       		.byte	0x9f
+ 828 0066 00000000 		.4byte	0
+ 829 006a 00000000 		.4byte	0
+ 830              	.LLST3:
+ 831 006e 52000000 		.4byte	.LVL12
+ 832 0072 5F000000 		.4byte	.LVL14-1
+ 833 0076 0100     		.2byte	0x1
+ 834 0078 52       		.byte	0x52
+ 835 0079 5F000000 		.4byte	.LVL14-1
+ 836 007d 62000000 		.4byte	.LVL15
+ 837 0081 0300     		.2byte	0x3
+ 838 0083 76       		.byte	0x76
+ 839 0084 01       		.sleb128 1
+ 840 0085 9F       		.byte	0x9f
+ 841 0086 62000000 		.4byte	.LVL15
+ 842 008a 68000000 		.4byte	.LVL16
+ 843 008e 0100     		.2byte	0x1
+ 844 0090 52       		.byte	0x52
+ 845 0091 68000000 		.4byte	.LVL16
+ 846 0095 BC000000 		.4byte	.LFE64
+ 847 0099 0300     		.2byte	0x3
+ 848 009b 76       		.byte	0x76
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 17
+
+
+ 849 009c 01       		.sleb128 1
+ 850 009d 9F       		.byte	0x9f
+ 851 009e 00000000 		.4byte	0
+ 852 00a2 00000000 		.4byte	0
+ 853              		.section	.debug_aranges,"",%progbits
+ 854 0000 1C000000 		.4byte	0x1c
+ 855 0004 0200     		.2byte	0x2
+ 856 0006 00000000 		.4byte	.Ldebug_info0
+ 857 000a 04       		.byte	0x4
+ 858 000b 00       		.byte	0
+ 859 000c 0000     		.2byte	0
+ 860 000e 0000     		.2byte	0
+ 861 0010 00000000 		.4byte	.LFB64
+ 862 0014 BC000000 		.4byte	.LFE64-.LFB64
+ 863 0018 00000000 		.4byte	0
+ 864 001c 00000000 		.4byte	0
+ 865              		.section	.debug_ranges,"",%progbits
+ 866              	.Ldebug_ranges0:
+ 867 0000 00000000 		.4byte	.LFB64
+ 868 0004 BC000000 		.4byte	.LFE64
+ 869 0008 00000000 		.4byte	0
+ 870 000c 00000000 		.4byte	0
+ 871              		.section	.debug_line,"",%progbits
+ 872              	.Ldebug_line0:
+ 873 0000 34020000 		.section	.debug_str,"MS",%progbits,1
+ 873      02000902 
+ 873      00000201 
+ 873      FB0E0D00 
+ 873      01010101 
+ 874              	.LASF17:
+ 875 0000 6D657373 		.ascii	"message\000"
+ 875      61676500 
+ 876              	.LASF33:
+ 877 0008 55415254 		.ascii	"UART_1_Start\000"
+ 877      5F315F53 
+ 877      74617274 
+ 877      00
+ 878              	.LASF31:
+ 879 0015 54696D65 		.ascii	"Timer_1_Start\000"
+ 879      725F315F 
+ 879      53746172 
+ 879      7400
+ 880              	.LASF18:
+ 881 0023 76616C65 		.ascii	"valeur_lue\000"
+ 881      75725F6C 
+ 881      756500
+ 882              	.LASF9:
+ 883 002e 5F5F696E 		.ascii	"__int32_t\000"
+ 883      7433325F 
+ 883      7400
+ 884              	.LASF34:
+ 885 0038 55415254 		.ascii	"UART_2_Start\000"
+ 885      5F325F53 
+ 885      74617274 
+ 885      00
+ 886              	.LASF24:
+ 887 0045 74726967 		.ascii	"trigger_Write\000"
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 18
+
+
+ 887      6765725F 
+ 887      57726974 
+ 887      6500
+ 888              	.LASF12:
+ 889 0053 666C6F61 		.ascii	"float\000"
+ 889      7400
+ 890              	.LASF2:
+ 891 0059 756E7369 		.ascii	"unsigned char\000"
+ 891      676E6564 
+ 891      20636861 
+ 891      7200
+ 892              	.LASF35:
+ 893 0067 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 893      43313120 
+ 893      352E342E 
+ 893      31203230 
+ 893      31363036 
+ 894 009a 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 894      20726576 
+ 894      6973696F 
+ 894      6E203233 
+ 894      37373135 
+ 895 00cd 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 895      66756E63 
+ 895      74696F6E 
+ 895      2D736563 
+ 895      74696F6E 
+ 896              	.LASF37:
+ 897 00f5 5A3A5C50 		.ascii	"Z:\\PSoC Creator\\Workspace01\\Design01.cydsn\000"
+ 897      536F4320 
+ 897      43726561 
+ 897      746F725C 
+ 897      576F726B 
+ 898              	.LASF6:
+ 899 0120 6C6F6E67 		.ascii	"long unsigned int\000"
+ 899      20756E73 
+ 899      69676E65 
+ 899      6420696E 
+ 899      7400
+ 900              	.LASF4:
+ 901 0132 73686F72 		.ascii	"short unsigned int\000"
+ 901      7420756E 
+ 901      7369676E 
+ 901      65642069 
+ 901      6E7400
+ 902              	.LASF39:
+ 903 0145 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 903      52784275 
+ 903      66666572 
+ 903      00
+ 904              	.LASF23:
+ 905 0152 54696D65 		.ascii	"Timer_2_WriteCounter\000"
+ 905      725F325F 
+ 905      57726974 
+ 905      65436F75 
+ 905      6E746572 
+ 906              	.LASF13:
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 19
+
+
+ 907 0167 646F7562 		.ascii	"double\000"
+ 907      6C6500
+ 908              	.LASF20:
+ 909 016e 6D696372 		.ascii	"microsecondes\000"
+ 909      6F736563 
+ 909      6F6E6465 
+ 909      7300
+ 910              	.LASF21:
+ 911 017c 64697374 		.ascii	"dist\000"
+ 911      00
+ 912              	.LASF38:
+ 913 0181 6D61696E 		.ascii	"main\000"
+ 913      00
+ 914              	.LASF25:
+ 915 0186 43794465 		.ascii	"CyDelayUs\000"
+ 915      6C617955 
+ 915      7300
+ 916              	.LASF11:
+ 917 0190 75696E74 		.ascii	"uint32\000"
+ 917      333200
+ 918              	.LASF0:
+ 919 0197 756E7369 		.ascii	"unsigned int\000"
+ 919      676E6564 
+ 919      20696E74 
+ 919      00
+ 920              	.LASF8:
+ 921 01a4 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 921      206C6F6E 
+ 921      6720756E 
+ 921      7369676E 
+ 921      65642069 
+ 922              	.LASF22:
+ 923 01bb 54696D65 		.ascii	"Timer_1_WriteCounter\000"
+ 923      725F315F 
+ 923      57726974 
+ 923      65436F75 
+ 923      6E746572 
+ 924              	.LASF32:
+ 925 01d0 54696D65 		.ascii	"Timer_2_Start\000"
+ 925      725F325F 
+ 925      53746172 
+ 925      7400
+ 926              	.LASF30:
+ 927 01de 55415254 		.ascii	"UART_2_PutString\000"
+ 927      5F325F50 
+ 927      75745374 
+ 927      72696E67 
+ 927      00
+ 928              	.LASF10:
+ 929 01ef 696E7433 		.ascii	"int32_t\000"
+ 929      325F7400 
+ 930              	.LASF16:
+ 931 01f7 73697A65 		.ascii	"sizetype\000"
+ 931      74797065 
+ 931      00
+ 932              	.LASF7:
+ 933 0200 6C6F6E67 		.ascii	"long long int\000"
+ARM GAS  C:\Users\bboucham\AppData\Local\Temp\ccbZZYma.s 			page 20
+
+
+ 933      206C6F6E 
+ 933      6720696E 
+ 933      7400
+ 934              	.LASF19:
+ 935 020e 7469636B 		.ascii	"ticks_ecoules\000"
+ 935      735F6563 
+ 935      6F756C65 
+ 935      7300
+ 936              	.LASF36:
+ 937 021c 6D61696E 		.ascii	"main.c\000"
+ 937      2E6300
+ 938              	.LASF14:
+ 939 0223 63686172 		.ascii	"char\000"
+ 939      00
+ 940              	.LASF27:
+ 941 0228 54696D65 		.ascii	"Timer_1_ReadCounter\000"
+ 941      725F315F 
+ 941      52656164 
+ 941      436F756E 
+ 941      74657200 
+ 942              	.LASF3:
+ 943 023c 73686F72 		.ascii	"short int\000"
+ 943      7420696E 
+ 943      7400
+ 944              	.LASF5:
+ 945 0246 6C6F6E67 		.ascii	"long int\000"
+ 945      20696E74 
+ 945      00
+ 946              	.LASF15:
+ 947 024f 6C6F6E67 		.ascii	"long double\000"
+ 947      20646F75 
+ 947      626C6500 
+ 948              	.LASF1:
+ 949 025b 7369676E 		.ascii	"signed char\000"
+ 949      65642063 
+ 949      68617200 
+ 950              	.LASF29:
+ 951 0267 55415254 		.ascii	"UART_1_PutString\000"
+ 951      5F315F50 
+ 951      75745374 
+ 951      72696E67 
+ 951      00
+ 952              	.LASF28:
+ 953 0278 73707269 		.ascii	"sprintf\000"
+ 953      6E746600 
+ 954              	.LASF26:
+ 955 0280 43794465 		.ascii	"CyDelay\000"
+ 955      6C617900 
+ 956              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
